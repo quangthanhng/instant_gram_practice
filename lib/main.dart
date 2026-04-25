@@ -1,6 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gap/gap.dart';
+import 'package:instagram_clone_qthanh/stat/auth/backend/authenticator.dart';
 import 'firebase_options.dart';
+import 'dart:developer' as devtools show log;
+
+extension Log on Object {
+  void log() => devtools.log(toString());
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +51,25 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Home Page'),
         // backgroundColor: Theme.of(context).colorScheme.onPrimary,
+      ),
+      body: Column(
+        children: [
+          TextButton(
+            onPressed: () async {
+              final result = await Authenticator().loginWithGoogle();
+              result.log();
+            },
+            child: const Text('Sign In With Google'),
+          ),
+          Gap(20),
+          TextButton(
+            onPressed: () async {
+              final result = await Authenticator().loginWithFacebook();
+              result.log();
+            },
+            child: const Text('Sign In With Facebook'),
+          ),
+        ],
       ),
     );
   }

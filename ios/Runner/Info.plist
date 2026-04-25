@@ -15,6 +15,14 @@
 		<string>fb1493456395641851</string>
 	</array>
 	</dict>
+	<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+			<string>com.googleusercontent.apps.908213207719-02a4t5p6mjqpov1rhdelhshdm283qa2f</string>
+		</array>
+	</dict>
 	</array>
 	<key>FacebookAppID</key>
 	<string>1493456395641851</string>
@@ -22,6 +30,8 @@
 	<string>c04b71a3e24219e86c79d593ec4ce6db</string>
 	<key>FacebookDisplayName</key> 
 	<string>Image Sharing Course</string> 
+	<key>GIDClientID</key>
+	<string>908213207719-02a4t5p6mjqpov1rhdelhshdm283qa2f.apps.googleusercontent.com</string> 
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
