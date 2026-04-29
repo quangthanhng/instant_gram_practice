@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:instagram_clone_qthanh/posts/typedefs/user_id.dart';
-import 'package:instagram_clone_qthanh/stat/auth/constants/constants.dart';
-import 'package:instagram_clone_qthanh/stat/auth/models/auth_result.dart';
+import 'package:instagram_clone_qthanh/state/posts/typedefs/user_id.dart';
+import 'package:instagram_clone_qthanh/state/auth/constants/constants.dart';
+import 'package:instagram_clone_qthanh/state/auth/models/auth_result.dart';
 
 class Authenticator {
   //  Dùng singleton instance, khai báo ở class level
@@ -31,12 +35,47 @@ class Authenticator {
   }
 
   Future<AuthResult> loginWithFacebook() async {
-    final loginResult = await FacebookAuth.instance.login();
-    final token = loginResult.accessToken?.tokenString;
-    if (token == null) {
+    // Tạo nonce ngẫu nhiên cho Limited Login (iOS)
+    final rawNonce = _generateNonce();
+    final hashedNonce = _sha256ofString(rawNonce);
+
+    final loginResult = await FacebookAuth.instance.login(
+      permissions: ['public_profile'],
+      loginTracking: LoginTracking.limited,
+      nonce: hashedNonce, // Truyền SHA256 hash cho Facebook SDK
+    );
+    print('Facebook Login Status: ${loginResult.status}');
+    print('Facebook Login Message: ${loginResult.message}');
+
+    final accessToken = loginResult.accessToken;
+    if (accessToken == null) {
+      print('Facebook Login: Access token is null');
       return AuthResult.aborted;
     }
-    final oauthCredentials = FacebookAuthProvider.credential(token);
+
+    // Debug: kiểm tra loại token trả về
+    print('Facebook Token Type: ${accessToken.runtimeType}');
+
+    final OAuthCredential oauthCredentials;
+
+    if (accessToken is LimitedToken) {
+      // iOS Limited Login: Facebook trả về OIDC token
+      // Truyền rawNonce (chưa hash) → Firebase sẽ tự hash SHA256 để so khớp
+      print('Facebook Login: Using Limited Token (OIDC) flow');
+      oauthCredentials = OAuthCredential(
+        providerId: 'facebook.com',
+        signInMethod: 'oauth',
+        idToken: accessToken.tokenString,
+        rawNonce: rawNonce, // Raw nonce (chưa hash)
+      );
+    } else {
+      // Classic access token (user cho phép tracking hoặc Android)
+      print('Facebook Login: Using Classic Token flow');
+      oauthCredentials = FacebookAuthProvider.credential(
+        accessToken.tokenString,
+      );
+    }
+
     try {
       await FirebaseAuth.instance.signInWithCredential(oauthCredentials);
       return AuthResult.success;
@@ -56,6 +95,12 @@ class Authenticator {
         } catch (_) {}
         return AuthResult.success;
       }
+      print(
+        'FirebaseAuthException in Facebook Login: ${e.code} - ${e.message}',
+      );
+      return AuthResult.failure;
+    } catch (e, stackTrace) {
+      print('Unknown Exception in Facebook Login: $e\n$stackTrace');
       return AuthResult.failure;
     }
   }
@@ -68,10 +113,10 @@ class Authenticator {
         scopeHint: [Constants.emailScope],
       );
 
-      // ✅ idToken lấy từ authentication (sync)
+      // idToken lấy từ authentication (sync)
       final idToken = googleUser.authentication.idToken;
 
-      // ✅ accessToken lấy riêng qua authorizationClient
+      // accessToken lấy riêng qua authorizationClient
       final clientAuth = await googleUser.authorizationClient.authorizeScopes([
         Constants.emailScope,
       ]);
@@ -101,5 +146,23 @@ class Authenticator {
       print('Unknown Exception in loginWithGoogle: $e\n$stackTrace');
       return AuthResult.failure;
     }
+  }
+
+  /// Tạo nonce ngẫu nhiên (cryptographically secure)
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
+  /// Hash SHA256 một chuỗi
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
