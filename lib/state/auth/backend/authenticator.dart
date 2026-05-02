@@ -109,18 +109,17 @@ class Authenticator {
     try {
       await _ensureGoogleSignInInitialized();
 
-      final googleUser = await _googleSignIn.authenticate(
-        scopeHint: [Constants.emailScope],
-      );
+      // Sử dụng authenticate() cho google_sign_in v7.0.0+
+      // Bỏ qua việc gọi authorizeScopes() vì nó sẽ làm hiện popup xin quyền lần 2.
+      // Firebase chỉ cần idToken là đủ để đăng nhập.
+      final googleUser = await _googleSignIn.authenticate();
 
-      // idToken lấy từ authentication (sync)
-      final idToken = googleUser.authentication.idToken;
+      if (googleUser == null) {
+        return AuthResult.aborted;
+      }
 
-      // accessToken lấy riêng qua authorizationClient
-      final clientAuth = await googleUser.authorizationClient.authorizeScopes([
-        Constants.emailScope,
-      ]);
-      final accessToken = clientAuth.accessToken;
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
 
       if (idToken == null) {
         return AuthResult.failure;
@@ -128,7 +127,7 @@ class Authenticator {
 
       final oauthCredentials = GoogleAuthProvider.credential(
         idToken: idToken,
-        accessToken: accessToken, // có thể null, Firebase vẫn chấp nhận
+        accessToken: null, // Không bắt buộc đối với Firebase Auth
       );
 
       await FirebaseAuth.instance.signInWithCredential(oauthCredentials);

@@ -2,11 +2,17 @@ import 'dart:developer' as devtools show log;
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:instagram_clone_qthanh/state/auth/providers/auth_state_provider.dart';
 import 'package:instagram_clone_qthanh/state/auth/providers/is_logged_in_provider.dart';
+import 'package:instagram_clone_qthanh/state/providers/is_loading_providers.dart';
+// import 'package:instagram_clone_qthanh/views/components/animations/data_not_found_animation_view.dart';
+// import 'package:instagram_clone_qthanh/views/components/animations/empty_contents_with_text_animation_view.dart';
+// import 'package:instagram_clone_qthanh/views/components/animations/error_animation_view.dart';
+// import 'package:instagram_clone_qthanh/views/components/animations/loading_animation_view.dart';
+// import 'package:instagram_clone_qthanh/views/components/animations/small_error_animation_view.dart';
 import 'package:instagram_clone_qthanh/views/components/loading/loading_screen.dart';
+import 'package:instagram_clone_qthanh/views/login/login_view.dart';
 import 'firebase_options.dart';
 
 extension Log on Object {
@@ -36,6 +42,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.blue),
       home: Consumer(
         builder: (context, ref, child) {
+          // take care of display the loading screen
+
+          ref.listen<bool>(isLoadingProvider, (_, isLoading) {
+            if (isLoading) {
+              LoadingScreen.instance().show(context: context);
+            } else {
+              LoadingScreen.instance().hide();
+            }
+          });
           final isLoggedIn = ref.watch(isLoggedInProvider);
           Log(isLoggedIn).log();
           if (isLoggedIn) {
@@ -59,44 +74,23 @@ class MainView extends StatelessWidget {
         // backgroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Consumer(
-        builder: (_, ref, child) => TextButton(
-          onPressed: () async {
-            LoadingScreen.instance().show(
-              context: context,
-              text: 'Hello World',
-            );
-            await ref.read(authStateProvider.notifier).logOut();
-          },
-          child: Center(child: const Text('Log out')),
-        ),
-      ),
-    );
-  }
-}
-
-// for when you are not logged in
-class LoginView extends ConsumerWidget {
-  const LoginView({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login View'),
-        // backgroundColor: Theme.of(context).colorScheme.onPrimary,
-      ),
-      body: Column(
-        children: [
-          TextButton(
-            onPressed: ref.read(authStateProvider.notifier).logInWithGoogle,
-            child: const Text('Sign In With Google'),
-          ),
-          Gap(20),
-          TextButton(
-            onPressed: ref.read(authStateProvider.notifier).logInWithFacebook,
-            child: const Text('Sign In With Facebook'),
-          ),
-        ],
+        builder: (_, ref, child) {
+          return TextButton(
+            onPressed: () async {
+              LoadingScreen.instance().show(
+                context: context,
+                text: 'Hello World',
+              );
+              await ref.read(authStateProvider.notifier).logOut();
+            },
+            child: Center(child: const Text('Log out')),
+          );
+          // return const Center(child: DataNotFoundAnimationView());
+          // return const EmptyContentsWithTextAnimationView(text: 'Hello World');
+          // return ErrorAnimationView();
+          // return SmallErrorAnimationView();
+          // return LoadingAnimationView();
+        },
       ),
     );
   }
