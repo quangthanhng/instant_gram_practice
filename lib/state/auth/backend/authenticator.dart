@@ -15,7 +15,9 @@ class Authenticator {
   bool _isGoogleSignInInitialized = false;
 
   UserId? get userId => FirebaseAuth.instance.currentUser?.uid;
+  // Hàm lấy uid của userId với UserId là đã được typedef từ String
   bool get isAlreadyLoggedIn => userId != null;
+  // Hàm check rằng đã login thành công chưa, nếu đã login rồi thì sẽ trả về một uid của User
   String get displayName =>
       FirebaseAuth.instance.currentUser?.displayName ?? '';
   String? get email => FirebaseAuth.instance.currentUser?.email;
@@ -28,6 +30,7 @@ class Authenticator {
     }
   }
 
+  // Khi logOut phải logOut cả 3 tài khoản giúp thoát hoàn toàn trạng thái, có thể nó đang ở trong trạng thái đăng nhập bị chồng chéo khi cả facebook lẫn google đều login vào cùng 1 tài khoản
   Future<void> logOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn.instance.signOut();
@@ -113,10 +116,6 @@ class Authenticator {
       // Bỏ qua việc gọi authorizeScopes() vì nó sẽ làm hiện popup xin quyền lần 2.
       // Firebase chỉ cần idToken là đủ để đăng nhập.
       final googleUser = await _googleSignIn.authenticate();
-
-      if (googleUser == null) {
-        return AuthResult.aborted;
-      }
 
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;

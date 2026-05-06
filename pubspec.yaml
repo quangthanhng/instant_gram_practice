@@ -55,6 +55,7 @@ dependencies:
   url_launcher: ^6.3.2
   gap: ^3.0.1
   crypto: ^3.0.7
+  supabase_flutter: ^2.12.4
 
 dev_dependencies:
   flutter_test:

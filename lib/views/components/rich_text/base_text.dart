@@ -20,7 +20,7 @@ class BaseText {
     required VoidCallback onTap,
     TextStyle? style = const TextStyle(
       color: Colors.blue,
-      decoration: TextDecoration.none,
+      decoration: TextDecoration.underline,
     ),
   }) => LinkText(text: text, onTap: onTap, style: style);
 }
