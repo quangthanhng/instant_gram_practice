@@ -24,12 +24,12 @@ class PostGridView extends StatelessWidget {
           post: post,
           onTapped: () {
             // Remove this code before we go to the details view
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) => PostCommentsView(postId: post.postId),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PostCommentsView(postId: post.postId),
+              ),
+            );
             // Navigate to the post detai details view
           },
         );
