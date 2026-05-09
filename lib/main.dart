@@ -14,7 +14,6 @@ import 'package:instagram_clone_qthanh/views/components/loading/loading_screen.d
 import 'package:instagram_clone_qthanh/views/login/login_view.dart';
 import 'package:instagram_clone_qthanh/views/main/main_view.dart';
 import 'firebase_options.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 extension Log on Object {
   void log() => devtools.log(toString());
@@ -23,10 +22,6 @@ extension Log on Object {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // await Supabase.initialize(
-  //   url: 'https://tlngonlmfosshjtwcczz.supabase.co',
-  //   anonKey: 'sb_publishable_8lTIeZYShTF7fEkliZjPpw_t3lktwK7',
-  // );
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -9,7 +9,7 @@ import 'package:instagram_clone_qthanh/state/posts/models/post.dart';
 import 'package:instagram_clone_qthanh/state/posts/models/post_key.dart';
 
 final userPostsProvider = StreamProvider.autoDispose<Iterable<Post>>((ref) {
-  final userId = ref.watch(useridProvider);
+  final userId = ref.watch(userIdProvider);
 
   final controller = StreamController<Iterable<Post>>();
 

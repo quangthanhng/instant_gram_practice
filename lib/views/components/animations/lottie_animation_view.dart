@@ -6,7 +6,7 @@ class LottieAnimationView extends StatelessWidget {
   const LottieAnimationView({
     super.key,
     required this.animation,
-    this.repeat = true,
+    this.repeat = false,
     this.reverse = false,
   });
 

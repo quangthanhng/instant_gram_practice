@@ -1,0 +1,1 @@
+enum DateSorting { newestOnTop, oldestOnTop }
