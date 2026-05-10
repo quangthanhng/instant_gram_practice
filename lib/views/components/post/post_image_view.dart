@@ -15,6 +15,15 @@ class PostImageView extends StatelessWidget {
           if (loadingProgress == null) return child;
           return const Center(child: CircularProgressIndicator());
         },
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(
+            child: Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 40,
+            ),
+          );
+        },
       ),
     );
   }

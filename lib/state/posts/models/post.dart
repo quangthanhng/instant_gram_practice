@@ -34,10 +34,11 @@ class Post {
       thumbnailStorageId = json[PostKey.thumbnailStorageId],
       originalFileStorageId = json[PostKey.originalFileStorageId],
       postSettings = {
-        for (final entry in json[PostKey.postSettings].entries)
-          PostSetting.values.firstWhere(
-            (element) => element.storageKey == entry.key,
-          ): entry.value,
+        if (json[PostKey.postSettings] is Map)
+          for (final entry in (json[PostKey.postSettings] as Map).entries)
+            PostSetting.values.firstWhere(
+              (element) => element.storageKey == entry.key,
+            ): entry.value,
       };
 
   bool get allowLikes => postSettings[PostSetting.allowLikes] ?? false;

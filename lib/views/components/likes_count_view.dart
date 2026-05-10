@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:instagram_clone_qthanh/state/likes/post_like_count_provider.dart';
+import 'package:instagram_clone_qthanh/state/likes/providers/post_like_count_provider.dart';
 import 'package:instagram_clone_qthanh/state/posts/typedefs/post_id.dart';
 import 'package:instagram_clone_qthanh/views/components/animations/small_error_animation_view.dart';
 import 'package:instagram_clone_qthanh/views/components/constants/strings.dart';
