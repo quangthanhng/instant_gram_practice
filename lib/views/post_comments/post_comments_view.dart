@@ -132,7 +132,7 @@ class PostCommentsView extends HookConsumerWidget {
         );
     if (isSent) {
       controller.clear();
-      dissMissKeyboar();
+      dissMissKeyboard();
     }
   }
 }
