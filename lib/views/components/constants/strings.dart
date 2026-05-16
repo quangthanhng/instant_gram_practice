@@ -19,5 +19,5 @@ class Strings {
       'Are you sure want to log out of the app?';
   static const cancel = 'Cancel';
 
-  const Strings._();
+  const Strings._(); // _ thể hiện là private
 }

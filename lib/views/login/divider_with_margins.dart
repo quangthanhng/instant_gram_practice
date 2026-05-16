@@ -5,8 +5,12 @@ class DividerWithMargins extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [SizedBox(height: 40), Divider(), SizedBox(height: 40)],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Divider(
+        color: Theme.of(context).colorScheme.outlineVariant,
+        thickness: 0.5,
+      ),
     );
   }
 }

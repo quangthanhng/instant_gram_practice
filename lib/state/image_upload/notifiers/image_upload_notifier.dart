@@ -118,7 +118,8 @@ class ImageUploadNotifier extends StateNotifier<IsLoading> {
           .collection(FirebaseCollectionName.posts)
           .add(postPayLoad);
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('🚨 LỖI UPLOAD: $e');
       return false;
     } finally {
       isLoading = false;
