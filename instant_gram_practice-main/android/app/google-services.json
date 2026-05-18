@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "908213207719",
+    "project_id": "insta-clone-qthanh-app",
+    "storage_bucket": "insta-clone-qthanh-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908213207719:android:f853f2da87931508b9d182",
+        "android_client_info": {
+          "package_name": "se.pixolity.instagram_clone_qthanh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908213207719-20krm1n8tl5vkqjss7nl54k7u5pcm66r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrsldNiYTbm_ViUk_ZVPr71LYf5DwAhkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908213207719-20krm1n8tl5vkqjss7nl54k7u5pcm66r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "908213207719-02a4t5p6mjqpov1rhdelhshdm283qa2f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "se.pixolity.instagramCloneQthanh"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

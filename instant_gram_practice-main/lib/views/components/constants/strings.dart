@@ -1,0 +1,23 @@
+import 'package:flutter/foundation.dart' show immutable;
+
+@immutable
+class Strings {
+  static const comment = 'comment';
+  static const loading = 'Loading...';
+  static const person = 'person';
+  static const people = 'people';
+
+  static const likedThis = 'liked this';
+
+  static const delete = 'Delete';
+  static const areYouSureWantToDeleteThis = 'Are you sure want to delete this';
+
+  // log out
+
+  static const logOut = 'Log Out';
+  static const areYouSureWantToLogOutOfTheApp =
+      'Are you sure want to log out of the app?';
+  static const cancel = 'Cancel';
+
+  const Strings._(); // _ thể hiện là private
+}
