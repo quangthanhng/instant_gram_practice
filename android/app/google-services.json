@@ -12,7 +12,28 @@
           "package_name": "se.pixolity.instagram_clone_qthanh"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "908213207719-301ll2mqru3t91g5ro4i9e8cmhgj4ra4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "se.pixolity.instagram_clone_qthanh",
+            "certificate_hash": "0b6e644103fd795d1a4bdfb618f80cc1400cd1d2"
+          }
+        },
+        {
+          "client_id": "908213207719-a11600jl4nctcbr7dlc1849opuufp066.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "se.pixolity.instagram_clone_qthanh",
+            "certificate_hash": "9af8efde8a75341cec19ed0234e5871a42545924"
+          }
+        },
+        {
+          "client_id": "908213207719-20krm1n8tl5vkqjss7nl54k7u5pcm66r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBrsldNiYTbm_ViUk_ZVPr71LYf5DwAhkU"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908213207719-20krm1n8tl5vkqjss7nl54k7u5pcm66r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "908213207719-02a4t5p6mjqpov1rhdelhshdm283qa2f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "se.pixolity.instagramCloneQthanh"
+              }
+            }
+          ]
         }
       }
     }
