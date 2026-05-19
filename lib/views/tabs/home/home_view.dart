@@ -4,7 +4,7 @@ import 'package:instagram_clone_qthanh/state/posts/provider/all_posts_provider.d
 import 'package:instagram_clone_qthanh/views/components/animations/empty_contents_with_text_animation_view.dart';
 import 'package:instagram_clone_qthanh/views/components/animations/loading_animation_view.dart';
 import 'package:instagram_clone_qthanh/views/components/animations/small_error_animation_view.dart';
-import 'package:instagram_clone_qthanh/views/components/post/post_grid_view.dart';
+import 'package:instagram_clone_qthanh/views/components/post/post_feed_view.dart';
 import 'package:instagram_clone_qthanh/views/constants/strings.dart';
 
 class HomeView extends ConsumerWidget {
@@ -26,7 +26,7 @@ class HomeView extends ConsumerWidget {
               text: Strings.noPostsAvailable,
             );
           } else {
-            return PostGridView(posts: posts);
+            return PostFeedView(posts: posts);
           }
         },
         error: (error, stackTrace) {

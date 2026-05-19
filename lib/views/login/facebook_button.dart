@@ -8,22 +8,21 @@ class FacebookButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 48,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(
+          const FaIcon(
             FontAwesomeIcons.facebook,
-            color: const Color(0xFF1877F2),
+            color: Colors.white,
             size: 22,
           ),
           const Gap(12),
           Text(
             Strings.facebook.trim(),
-            style: TextStyle(
-              color: colorScheme.onSurface,
+            style: const TextStyle(
+              color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),

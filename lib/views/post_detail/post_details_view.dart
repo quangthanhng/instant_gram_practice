@@ -16,8 +16,10 @@ import 'package:instagram_clone_qthanh/views/components/likes_count_view.dart';
 import 'package:instagram_clone_qthanh/views/components/post/post_date_view.dart';
 import 'package:instagram_clone_qthanh/views/components/post/post_display_name_and_message_view.dart';
 import 'package:instagram_clone_qthanh/views/components/post/post_image_or_video_view.dart';
+import 'package:instagram_clone_qthanh/views/components/post/post_header.dart';
 import 'package:instagram_clone_qthanh/views/constants/strings.dart';
 import 'package:instagram_clone_qthanh/views/post_comments/post_comments_view.dart';
+import 'package:instagram_clone_qthanh/views/theme/page_transitions.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gap/gap.dart';
 
@@ -45,7 +47,6 @@ class _PostDetailsViewState extends ConsumerState<PostDetailsView> {
     );
 
     // can we delete this post?
-
     final canDeletePost = ref.watch(
       canCurrentUserDeletePostProvider(widget.post),
     );
@@ -103,45 +104,83 @@ class _PostDetailsViewState extends ConsumerState<PostDetailsView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // 1. Post Author Header
+                PostHeader(post: postWithComments.post),
+                
+                // 2. Post Media
                 PostImageOrVideoView(post: postWithComments.post),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // like button if post allows liking
-                    if (postWithComments.post.allowLikes)
-                      LikeButton(postId: postId),
-                    // Comment button if post allows commenting on it
-                    if (postWithComments.post.allowCommnets)
+                
+                // 3. Action Row
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Row(
+                    children: [
+                      // Like button
+                      if (postWithComments.post.allowLikes)
+                        LikeButton(postId: postId),
+                      // Comment button
+                      if (postWithComments.post.allowCommnets)
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              SlideBottomPageRoute(
+                                child: PostCommentsView(postId: postId),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.mode_comment_outlined),
+                        ),
+                      const Spacer(),
+                      // Share icon
                       IconButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PostCommentsView(postId: postId),
-                            ),
+                          final url = postWithComments.post.fileUrl;
+                          SharePlus.instance.share(
+                            ShareParams(text: url, subject: Strings.checkOutThisPost),
                           );
                         },
-                        icon: Icon(Icons.mode_comment_outlined),
+                        icon: const Icon(Icons.send_rounded),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
-                // post details (show divider at bottom)
-                PostDisplayNameAndMessageView(post: postWithComments.post),
-                PostDateView(dateTime: postWithComments.post.createdAt),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Divider(color: Colors.white70),
-                ),
-                CompactCommentColumn(comments: postWithComments.comments),
-                // display like count
+                
+                // 4. Like Count (indented nicely)
                 if (postWithComments.post.allowLikes)
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(children: [LikesCountView(postId: postId)]),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [LikesCountView(postId: postId)],
+                    ),
                   ),
+                
+                // 5. Display Name and Caption message
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: PostDisplayNameAndMessageView(post: postWithComments.post),
+                ),
+                
+                // 6. Relative Post Date Time
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: PostDateView(dateTime: postWithComments.post.createdAt),
+                ),
+                
+                // 7. Standard Divider
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+                
+                // 8. Compact Comments Section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: CompactCommentColumn(comments: postWithComments.comments),
+                ),
+                
                 // add spacing to bottom of the screen
-                Gap(100),
+                const Gap(100),
               ],
             ),
           );

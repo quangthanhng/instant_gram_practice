@@ -10,13 +10,13 @@ class Strings {
   static const likedThis = 'liked this';
 
   static const delete = 'Delete';
-  static const areYouSureWantToDeleteThis = 'Are you sure want to delete this';
+  static const areYouSureWantToDeleteThis = 'Are you sure you want to delete this';
 
   // log out
 
   static const logOut = 'Log Out';
   static const areYouSureWantToLogOutOfTheApp =
-      'Are you sure want to log out of the app?';
+      'Are you sure you want to log out of the app?';
   static const cancel = 'Cancel';
 
   const Strings._(); // _ thể hiện là private

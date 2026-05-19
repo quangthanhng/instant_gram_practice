@@ -19,22 +19,51 @@ class SearchView extends HookConsumerWidget {
       });
       return () {};
     }, [controller]);
+    final theme = Theme.of(context);
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: TextField(
-              controller: controller,
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                labelText: Strings.enterYourSearchTermHere,
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    controller.clear();
-                    dissMissKeyboard();
-                  },
-                  icon: const Icon(Icons.clear),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: TextField(
+                controller: controller,
+                textInputAction: TextInputAction.search,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecoration(
+                  hintText: Strings.enterYourSearchTermHere,
+                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    size: 22,
+                  ),
+                  suffixIcon: searchTerm.value.isNotEmpty
+                      ? IconButton(
+                          onPressed: () {
+                            controller.clear();
+                            dissMissKeyboard();
+                          },
+                          icon: Icon(
+                            Icons.cancel_rounded,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            size: 20,
+                          ),
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                 ),
               ),
             ),

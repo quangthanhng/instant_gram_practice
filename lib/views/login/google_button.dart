@@ -8,22 +8,21 @@ class GoogleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 48,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FaIcon(
+          const FaIcon(
             FontAwesomeIcons.google,
-            color: const Color(0xFF4285F4),
+            color: Color(0xFF4285F4),
             size: 22,
           ),
           const Gap(12),
           Text(
             Strings.google.trim(),
-            style: TextStyle(
-              color: colorScheme.onSurface,
+            style: const TextStyle(
+              color: Color(0xFF1F1F1F),
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),

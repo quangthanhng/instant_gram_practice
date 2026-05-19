@@ -13,6 +13,7 @@ import 'package:instagram_clone_qthanh/state/providers/is_loading_providers.dart
 import 'package:instagram_clone_qthanh/views/components/loading/loading_screen.dart';
 import 'package:instagram_clone_qthanh/views/login/login_view.dart';
 import 'package:instagram_clone_qthanh/views/main/main_view.dart';
+import 'package:instagram_clone_qthanh/views/theme/app_theme.dart';
 import 'firebase_options.dart';
 
 extension Log on Object {
@@ -33,13 +34,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Instagram',
       debugShowCheckedModeBanner: false,
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorSchemeSeed: Colors.blueGrey,
-        tabBarTheme: TabBarThemeData(indicatorColor: Colors.blueGrey),
-      ),
+      darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      theme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.blue),
+      theme: AppTheme.darkTheme,
       home: Consumer(
         builder: (context, ref, child) {
           // take care of display the loading screen

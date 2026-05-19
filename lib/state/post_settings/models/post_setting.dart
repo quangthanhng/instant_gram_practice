@@ -2,7 +2,7 @@ import 'package:instagram_clone_qthanh/state/post_settings/constants/constants.d
 
 enum PostSetting {
   allowLikes(
-    title: Constants.allowCommentsStorageKey,
+    title: Constants.allowLikesTitle,
     description: Constants.allowLikesDescription,
     storageKey: Constants.allowLikesStorageKey,
   ),

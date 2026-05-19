@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:instagram_clone_qthanh/state/constants/firebase-field_name.dart';
 import 'package:instagram_clone_qthanh/state/constants/firebase_collection_name.dart';
@@ -8,6 +9,37 @@ import 'package:instagram_clone_qthanh/state/user_info/models/user_info_payload.
 @immutable
 class UserInfoStorage {
   const UserInfoStorage();
+
+  Future<bool> updateDisplayName({
+    required UserId userId,
+    required String displayName,
+  }) async {
+    try {
+      // 1. Update Firestore user document
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection(FirebaseCollectionName.users)
+          .where(FireBaseFieldName.userId, isEqualTo: userId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference.update({
+          FireBaseFieldName.displayName: displayName,
+        });
+      }
+
+      // 2. Update Firebase Auth display name so they stay perfectly in sync
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        await currentUser.updateDisplayName(displayName);
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> saveUserInfo({
     required UserId userId,
     required String displayName,

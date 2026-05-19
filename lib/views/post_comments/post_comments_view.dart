@@ -12,6 +12,8 @@ import 'package:instagram_clone_qthanh/views/components/animations/loading_anima
 import 'package:instagram_clone_qthanh/views/components/comment/comment_tile.dart';
 import 'package:instagram_clone_qthanh/views/constants/strings.dart';
 import 'package:instagram_clone_qthanh/views/extensions/dismiss_keyboard.dart';
+import 'package:instagram_clone_qthanh/views/components/avatar_widget.dart';
+import 'package:instagram_clone_qthanh/state/user_info/providers/user_info_model_providers.dart';
 
 class PostCommentsView extends HookConsumerWidget {
   const PostCommentsView({super.key, required this.postId});
@@ -35,26 +37,19 @@ class PostCommentsView extends HookConsumerWidget {
       return () {};
     }, [commentsController]);
 
+    final userId = ref.watch(userIdProvider);
+    final userInfo = userId != null ? ref.watch(userInfoModelProvider(userId)).value : null;
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(Strings.comments),
-        actions: [
-          IconButton(
-            onPressed: hasText.value
-                ? () {
-                    _submitCommentWithController(commentsController, ref);
-                  }
-                : null,
-            icon: const Icon(Icons.send),
-          ),
-        ],
       ),
       body: SafeArea(
-        child: Flex(
-          direction: Axis.vertical,
+        child: Column(
           children: [
+            // 1. Comments list occupying full remaining space
             Expanded(
-              flex: 4,
               child: comments.when(
                 data: (comments) {
                   if (comments.isEmpty) {
@@ -71,7 +66,7 @@ class PostCommentsView extends HookConsumerWidget {
                     },
                     child: ListView.builder(
                       itemCount: comments.length,
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                       itemBuilder: (context, index) {
                         final comment = comments.elementAt(index);
                         return CommentTile(comment: comment);
@@ -87,26 +82,80 @@ class PostCommentsView extends HookConsumerWidget {
                 },
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: TextField(
-                    textInputAction: TextInputAction.send,
-                    controller: commentsController,
-                    onSubmitted: (comment) {
-                      if (comment.isNotEmpty) {
-                        _submitCommentWithController(commentsController, ref);
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: Strings.writeYourCommentHere,
-                    ),
+            
+            // 2. High-fidelity floating bottom comment input bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border(
+                  top: BorderSide(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                    width: 0.5,
                   ),
                 ),
+              ),
+              child: Row(
+                children: [
+                  // Active user's avatar
+                  if (userId != null)
+                    AvatarWidget(
+                      userId: userId,
+                      displayName: userInfo?.displayName ?? '?',
+                      radius: 16.0,
+                      hasStoryRing: false,
+                    ),
+                  const SizedBox(width: 12),
+                  
+                  // Text input field
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: commentsController,
+                        textInputAction: TextInputAction.send,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                        ),
+                        onSubmitted: (comment) {
+                          if (comment.isNotEmpty) {
+                            _submitCommentWithController(commentsController, ref);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: Strings.writeYourCommentHere,
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                            fontSize: 13.5,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  
+                  // Send action button
+                  IconButton(
+                    onPressed: hasText.value
+                        ? () {
+                            _submitCommentWithController(commentsController, ref);
+                          }
+                        : null,
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: hasText.value
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

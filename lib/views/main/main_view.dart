@@ -16,6 +16,7 @@ import 'package:instagram_clone_qthanh/views/create_new_post/create_new_post_vie
 import 'package:instagram_clone_qthanh/views/tabs/home/home_view.dart';
 import 'package:instagram_clone_qthanh/views/tabs/search/search_view.dart';
 import 'package:instagram_clone_qthanh/views/tabs/users_posts/user_posts_view.dart';
+import 'package:instagram_clone_qthanh/views/theme/page_transitions.dart';
 
 // ─────────────────────────────────────────────────────────────
 // Riverpod provider to persist active tab index across rebuilds.
@@ -62,36 +63,24 @@ class MainView extends ConsumerStatefulWidget {
   ConsumerState<MainView> createState() => _MainViewState();
 }
 
-class _MainViewState extends ConsumerState<MainView>
-    with SingleTickerProviderStateMixin {
-  // FAB press-scale animation
-  late final AnimationController _fabScaleController;
-  late final Animation<double> _fabScaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _fabScaleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-      reverseDuration: const Duration(milliseconds: 150),
-    );
-    _fabScaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _fabScaleController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _fabScaleController.dispose();
-    super.dispose();
-  }
+class _MainViewState extends ConsumerState<MainView> {
 
   @override
   Widget build(BuildContext context) {
     final activeTab = ref.watch(_activeTabProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Resolve index for IndexedStack:
+    // Tab 0 -> Home (Child 0)
+    // Tab 1 -> Search (Child 1)
+    // Tab 3 -> Profile (Child 2)
+    int stackIndex = 0;
+    if (activeTab == 1) {
+      stackIndex = 1;
+    } else if (activeTab == 3) {
+      stackIndex = 2;
+    }
 
     return Scaffold(
       // ── AppBar: Minimal, transparent ──
@@ -100,21 +89,17 @@ class _MainViewState extends ConsumerState<MainView>
       // ── Body: IndexedStack guarantees zero rebuilds ──
       body: SafeArea(
         child: IndexedStack(
-          index: activeTab,
+          index: stackIndex,
           children: const [
-            _KeepAliveWrapper(child: UserPostsView()), // Tab 0: Profile
-            _KeepAliveWrapper(child: SearchView()),    // Tab 1: Search
-            _KeepAliveWrapper(child: HomeView()),      // Tab 2: Home
+            _KeepAliveWrapper(child: HomeView()),      // Child 0: Home Feed
+            _KeepAliveWrapper(child: SearchView()),    // Child 1: Staggered Search/Explore
+            _KeepAliveWrapper(child: UserPostsView()), // Child 2: Profile View
           ],
         ),
       ),
 
-      // ── FAB: Content creation (floating above bottom nav) ──
-      floatingActionButton: _buildFab(colorScheme),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-
-      // ── Bottom Navigation ──
-      bottomNavigationBar: _buildBottomNav(colorScheme, activeTab),
+      // ── Premium Bottom Navigation ──
+      bottomNavigationBar: _buildBottomNav(theme, colorScheme, activeTab),
     );
   }
 
@@ -167,123 +152,158 @@ class _MainViewState extends ConsumerState<MainView>
   }
 
   // ─────────────────────────────────────────────────────────────
-  // Bottom Navigation Bar (Material 3)
-  //
-  // Order: Profile (0) → Search (1) → Home (2)
+  // Custom Ultra-Premium Bottom Navigation Bar
   // ─────────────────────────────────────────────────────────────
-  Widget _buildBottomNav(ColorScheme colorScheme, int activeTab) {
+  Widget _buildBottomNav(ThemeData theme, ColorScheme colorScheme, int activeTab) {
     return Container(
+      height: 60 + MediaQuery.paddingOf(context).bottom,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.1),
             width: 0.5,
           ),
         ),
       ),
-      child: NavigationBar(
-        height: 68,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        indicatorColor: colorScheme.primaryContainer.withValues(alpha: 0.7),
-        indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        selectedIndex: activeTab,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        animationDuration: const Duration(milliseconds: 250),
-        onDestinationSelected: (index) {
-          HapticFeedback.lightImpact();
-          ref.read(_activeTabProvider.notifier).state = index;
-        },
-        destinations: [
-          // Index 0 – Profile / User Posts
-          NavigationDestination(
-            icon: Icon(
-              Icons.person_outline_rounded,
-              color: colorScheme.onSurfaceVariant,
-              semanticLabel: 'Profile tab',
-            ),
-            selectedIcon: Icon(
-              Icons.person_rounded,
-              color: colorScheme.onPrimaryContainer,
-            ),
-            label: 'Profile',
+      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          // 1. Home Tab
+          _buildNavItem(
+            index: 0,
+            activeTab: activeTab,
+            unselectedIcon: Icons.home_outlined,
+            selectedIcon: Icons.home_rounded,
+            colorScheme: colorScheme,
+            theme: theme,
           ),
-          // Index 1 – Search
-          NavigationDestination(
-            icon: Icon(
-              Icons.search_outlined,
-              color: colorScheme.onSurfaceVariant,
-              semanticLabel: 'Search tab',
-            ),
-            selectedIcon: Icon(
-              Icons.search_rounded,
-              color: colorScheme.onPrimaryContainer,
-            ),
-            label: 'Search',
+          
+          // 2. Search Tab
+          _buildNavItem(
+            index: 1,
+            activeTab: activeTab,
+            unselectedIcon: Icons.search_rounded,
+            selectedIcon: Icons.search_rounded,
+            colorScheme: colorScheme,
+            theme: theme,
           ),
-          // Index 2 – Home / All Posts
-          NavigationDestination(
-            icon: Icon(
-              Icons.home_outlined,
-              color: colorScheme.onSurfaceVariant,
-              semanticLabel: 'Home tab',
-            ),
-            selectedIcon: Icon(
-              Icons.home_rounded,
-              color: colorScheme.onPrimaryContainer,
-            ),
-            label: 'Home',
+          
+          // 3. Create Tab (Tapping this opens bottom sheet, no tab change!)
+          _buildCreateNavItem(colorScheme: colorScheme, theme: theme),
+          
+          // 4. Profile Tab
+          _buildNavItem(
+            index: 3,
+            activeTab: activeTab,
+            unselectedIcon: Icons.person_outline_rounded,
+            selectedIcon: Icons.person_rounded,
+            colorScheme: colorScheme,
+            theme: theme,
           ),
         ],
       ),
     );
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // FAB – Animated scale on press → opens create-post sheet
-  // ─────────────────────────────────────────────────────────────
-  Widget _buildFab(ColorScheme colorScheme) {
-    return GestureDetector(
-      onTapDown: (_) => _fabScaleController.forward(),
-      onTapUp: (_) {
-        _fabScaleController.reverse();
+  Widget _buildNavItem({
+    required int index,
+    required int activeTab,
+    required IconData unselectedIcon,
+    required IconData selectedIcon,
+    required ColorScheme colorScheme,
+    required ThemeData theme,
+  }) {
+    final isSelected = activeTab == index;
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        ref.read(_activeTabProvider.notifier).state = index;
+      },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? selectedIcon : unselectedIcon,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurface.withValues(alpha: 0.6),
+              size: 26,
+            )
+            .animate(target: isSelected ? 1 : 0)
+            .scale(
+              begin: const Offset(1, 1),
+              end: const Offset(1.12, 1.12),
+              duration: 150.ms,
+              curve: Curves.easeOutBack,
+            ),
+            const SizedBox(height: 4),
+            // Sleek mini-dot indicator below selected tab
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: isSelected ? 4 : 0,
+              height: isSelected ? 4 : 0,
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreateNavItem({
+    required ColorScheme colorScheme,
+    required ThemeData theme,
+  }) {
+    return InkWell(
+      onTap: () {
         HapticFeedback.mediumImpact();
         _showCreatePostSheet(colorScheme);
       },
-      onTapCancel: () => _fabScaleController.reverse(),
-      child: AnimatedBuilder(
-        animation: _fabScaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _fabScaleAnimation.value,
-            child: child,
-          );
-        },
-        child: FloatingActionButton.large(
-          heroTag: 'createPostFab',
-          elevation: 4,
-          highlightElevation: 8,
-          shape: const CircleBorder(),
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          tooltip: 'Create post',
-          onPressed: null, // Handled by GestureDetector
-          child: const Icon(Icons.add_rounded, size: 32),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(4.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primary,
+              colorScheme.secondary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.primary.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(6.0),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.add_rounded,
+            color: colorScheme.primary,
+            size: 20,
+          ),
         ),
       ),
-    )
-        .animate()
-        .scale(
-          begin: const Offset(0, 0),
-          end: const Offset(1, 1),
-          duration: 400.ms,
-          curve: Curves.elasticOut,
-        )
-        .fadeIn(duration: 300.ms);
+    );
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -386,8 +406,8 @@ class _MainViewState extends ConsumerState<MainView>
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CreateNewPostView(
+      SlideBottomPageRoute(
+        child: CreateNewPostView(
           fileToPost: imageFile,
           fileType: FileType.image,
         ),
@@ -406,8 +426,8 @@ class _MainViewState extends ConsumerState<MainView>
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CreateNewPostView(
+      SlideBottomPageRoute(
+        child: CreateNewPostView(
           fileToPost: videoFile,
           fileType: FileType.video,
         ),

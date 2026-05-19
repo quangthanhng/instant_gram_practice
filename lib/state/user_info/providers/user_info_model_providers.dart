@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:instagram_clone_qthanh/state/constants/firebase-field_name.dart';
 import 'package:instagram_clone_qthanh/state/constants/firebase_collection_name.dart';
 import 'package:instagram_clone_qthanh/state/posts/typedefs/user_id.dart';
+import 'package:instagram_clone_qthanh/state/user_info/backend/user_info_storage.dart';
 import 'package:instagram_clone_qthanh/state/user_info/models/user_info_model.dart';
 
 final userInfoModelProvider = StreamProvider.family
@@ -28,3 +29,7 @@ final userInfoModelProvider = StreamProvider.family
       });
       return controller.stream;
     });
+
+final userInfoStorageProvider = Provider<UserInfoStorage>((ref) {
+  return const UserInfoStorage();
+});

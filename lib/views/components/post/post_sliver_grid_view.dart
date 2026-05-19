@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram_clone_qthanh/state/posts/models/post.dart';
 import 'package:instagram_clone_qthanh/views/components/post/post_thumbnail_view.dart';
 import 'package:instagram_clone_qthanh/views/post_detail/post_details_view.dart';
+import 'package:instagram_clone_qthanh/views/theme/page_transitions.dart';
 
 class PostSliverGridView extends StatelessWidget {
   final Iterable<Post> posts;
@@ -18,11 +19,11 @@ class PostSliverGridView extends StatelessWidget {
         return PostThumbnailView(
           post: post,
           onTapped: () {
-            // Navigate to the post detai details view
+            // Navigate to the post details view
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => PostDetailsView(post: post),
+              SlideRightPageRoute(
+                child: PostDetailsView(post: post),
               ),
             );
           },
