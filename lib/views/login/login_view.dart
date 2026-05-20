@@ -24,7 +24,10 @@ class LoginView extends ConsumerWidget {
     final hasError = authState.result == AuthResult.failure;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: RadialGradient(
             center: Alignment.topLeft,
@@ -36,6 +39,7 @@ class LoginView extends ConsumerWidget {
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             behavior: HitTestBehavior.opaque,
